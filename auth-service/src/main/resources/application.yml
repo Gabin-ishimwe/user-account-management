@@ -15,7 +15,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/authservice
     username: postgres
-    password: andela
+    password: postgres
 
 # Eureka Server
 eureka:
