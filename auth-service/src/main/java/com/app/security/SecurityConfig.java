@@ -1,9 +1,12 @@
 package com.app.security;
 
 
-import com.ewallet.userService.utils.JwtUserDetailService;
+import com.app.utils.JwtUserDetailService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,28 +20,21 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/**",
-            "/v2/api-docs",
-            "/swagger-ui/**",
-            "/swagger-resources/**",
-            "/api/v1/",
-            "/actuator/**"
     };
 
-    @Autowired
-    private JwtAuthFilter jwtAuthFilter;
 
-    @Autowired
-    private JwtAuthEntryPoint jwtAuthEntryPoint;
+    private final JwtAuthFilter jwtAuthFilter;
 
-    @Autowired
-    private JwtUserDetailService jwtUserDetailService;
+    private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
-    @Autowired
+    private final JwtUserDetailService jwtUserDetailService;
+
     private AccessDenied accessDenied;
 
     @Bean
@@ -62,9 +58,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors().and().csrf().disable()
+                .cors().and()
+                .csrf().disable()
                 .authorizeHttpRequests()
-                .antMatchers(WHITE_LIST_URL).permitAll()
+                .requestMatchers(WHITE_LIST_URL).permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

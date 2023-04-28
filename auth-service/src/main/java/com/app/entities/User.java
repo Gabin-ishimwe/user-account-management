@@ -33,6 +33,10 @@ public class User {
     )
     private String password;
 
+    @Column(name = "is_enabled")
+    private boolean isEnabled;
+
+
     @ManyToMany(
             fetch = FetchType.EAGER
     )
@@ -48,4 +52,8 @@ public class User {
             )
     )
     private List<Role> roles;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(referencedColumnName = "id", name = "verification_id")
+    private VerificationToken verificationToken;
 }

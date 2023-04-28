@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8081
 
 # Eureka Server
 eureka:
@@ -9,4 +9,4 @@ eureka:
 
 spring:
   application:
-    name: api-gateway-service
+    name: profile-service

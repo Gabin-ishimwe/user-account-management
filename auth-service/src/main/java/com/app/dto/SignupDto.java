@@ -11,6 +11,12 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class SignupDto {
+    @NotBlank(message = "First name is required")
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    private String lastName;
+
     @NotBlank(message = "Email is required")
     @Email(message = "Email is invalid")
     private String email;

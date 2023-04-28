@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class JwtUserDetailService implements UserDetailsService {
@@ -21,12 +22,12 @@ public class JwtUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username);
-        if(user != null) {
+        Optional<User> user = userRepository.findByEmail(username);
+        if(user.isPresent()) {
             return new org.springframework.security.core.userdetails.User(
-                    user.getEmail(),
-                    user.getPassword(),
-                    authorities(user)
+                    user.get().getEmail(),
+                    user.get().getPassword(),
+                    authorities(user.get())
             );
         } else {
             throw new UsernameNotFoundException("User not found");
