@@ -22,8 +22,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: s.ishimwegabin@gmail.com
-    password: eupwhwzjzzbbutsm
+    username:
+    password:
     properties:
       mail:
         smtp:
@@ -41,9 +41,5 @@ app:
   jwt:
     secret: fakdjfakdsjfkadsjfkadsf
 
-twilio:
-  account_sid: AC9871796fd39b8bd098d5103efedac2a8
-  auth_token: d0bc3dbb8941ee5ed7f91fc7347da084
-  trial_number: +16203878414
 
 
