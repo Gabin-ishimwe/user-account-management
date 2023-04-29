@@ -1,8 +1,10 @@
 package com.app.services;
 
 import com.app.dto.AuthResponseDto;
+import com.app.dto.OtpRequestDto;
 import com.app.dto.SignInDto;
 import com.app.dto.SignupDto;
+import com.app.entities.Otp;
 import com.app.entities.PasswordResetToken;
 import com.app.entities.User;
 import com.app.entities.VerificationToken;
@@ -10,6 +12,7 @@ import com.app.event.resetPassword.ResetPasswordEvent;
 import com.app.exceptions.NotFoundException;
 import com.app.exceptions.UserAuthException;
 import com.app.exceptions.UserExistsException;
+import com.app.repositories.OtpRepository;
 import com.app.repositories.RoleRepository;
 import com.app.repositories.UserRepository;
 import com.app.repositories.VerificationTokenRepository;
@@ -22,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,6 +56,10 @@ public class UserService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final TwilioService twilioService;
+
+    private final OtpRepository otpRepository;
+
 
     @Transactional
     public AuthResponseDto userSignUp(SignupDto signupDto) throws UserExistsException {
@@ -60,6 +69,7 @@ public class UserService {
         User user = User.builder()
                 .email(signupDto.getEmail())
                 .password(passwordEncoder.encode(signupDto.getPassword()))
+                .contactNumber(signupDto.getPhoneNumber())
                 .build();
         User createdUser = userRepository.save(user);
 
@@ -97,32 +107,7 @@ public class UserService {
 
     }
 
-//    public void saveUserVerificationToken(User user, String token) {
-//        VerificationToken verificationToken = new VerificationToken(token, user);
-//        verificationTokenRepository.save(verificationToken);
-//    }
-//
-//    public String verifyUser(String token) throws Exception {
-//        VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
-//        if(verificationToken == null) throw new NotFoundException("Verification token doesn't exist");
-//        if(verificationToken.getUser().isEnabled()) return "User has already been verified, please login";
-//
-//        return validateToken(verificationToken);
-//    }
-//
-//    public String validateToken(VerificationToken token) {
-//        if(token.getExpirationTime().isBefore(LocalDateTime.now())) {
-//            verificationTokenRepository.delete(token);
-//            return "Token already expired";
-//        }
-//        User user = token.getUser();
-//        user.setEnabled(true);
-//        userRepository.save(user);
-//        return "Email verified successful. Now you can login";
-//    }
-
-
-    public String forgotPasswordRequest(String email, String url) throws NotFoundException {
+    public String  forgotPasswordRequest(String email, String url) throws NotFoundException {
         System.out.println(email);
         Optional<User> findUser = userRepository.findByEmail(email);
         System.out.println(findUser.isPresent());
@@ -144,5 +129,38 @@ public class UserService {
         userRepository.save(user.get());
 
         return "Password has been reset successful";
+    }
+
+    public String enableMfa(OtpRequestDto otpRequestDto) throws NotFoundException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null && !authentication.isAuthenticated()) return "User not authenticated";
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        Optional<User> findUser = userRepository.findByEmail(userDetails.getUsername());
+        if(findUser.isEmpty()) throw new NotFoundException("User not found");
+        findUser.get().setMfaEnabled(true);
+        if(!otpRequestDto.getPhoneNumber().isEmpty()) findUser.get().setContactNumber(otpRequestDto.getPhoneNumber());
+        userRepository.save(findUser.get());
+        return "Multi factor authentication enabled";
+    }
+
+    public String userOtp(OtpRequestDto otpRequestDto) throws NotFoundException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null && !authentication.isAuthenticated()) return "User not authenticated";
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        Optional<User> findUser = userRepository.findByEmail(userDetails.getUsername());
+        if(findUser.isEmpty()) throw new NotFoundException("User not found");
+        return twilioService.sendOtpPasssword(otpRequestDto, findUser.get());
+    }
+
+    public AuthResponseDto userValidateOtp(String otp) throws NotFoundException, UserAuthException {
+        Otp otpValidation = twilioService.validateOtp(otp);
+        User userOtp = otpValidation.getUser();
+        AuthResponseDto responseDto = createJwt("User logged in with OTP", userOtp);
+        otpRepository.delete(otpValidation);
+        return responseDto;
     }
 }

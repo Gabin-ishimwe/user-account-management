@@ -33,9 +33,14 @@ public class User {
     )
     private String password;
 
+    @Column(name = "contact_number")
+    private String contactNumber;
+
     @Column(name = "is_enabled")
     private boolean isEnabled;
 
+    @Column(name = "mfa_enabled")
+    private boolean mfaEnabled;
 
     @ManyToMany(
             fetch = FetchType.EAGER
@@ -58,4 +63,7 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private PasswordResetToken passwordResetToken;
+
+    @OneToOne(mappedBy = "user")
+    private Otp otp;
 }

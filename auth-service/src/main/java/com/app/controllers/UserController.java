@@ -1,9 +1,6 @@
 package com.app.controllers;
 
-import com.app.dto.AuthResponseDto;
-import com.app.dto.ResetEmailDto;
-import com.app.dto.SignInDto;
-import com.app.dto.SignupDto;
+import com.app.dto.*;
 import com.app.event.registration.RegistrationEvent;
 import com.app.exceptions.NotFoundException;
 import com.app.exceptions.UserAuthException;
@@ -11,10 +8,8 @@ import com.app.exceptions.UserExistsException;
 import com.app.services.UserService;
 import com.app.services.VerificationTokenService;
 import com.app.utils.ApplicationUrl;
-import com.app.validation.passwordValidation.Password;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
@@ -49,15 +44,30 @@ public class UserController {
     }
 
     @PostMapping(path = "/forgot-password")
-    public String resetPasswordRequest(@RequestBody @Valid ResetEmailDto resetEmailDto, HttpServletRequest request) throws NotFoundException {
-        System.out.println(resetEmailDto.getEmail());
+    public String resetPasswordRequest(@RequestBody @Valid ResetLinkDto resetLinkDto, HttpServletRequest request) throws NotFoundException {
+        System.out.println(resetLinkDto.getEmail());
         String url = applicationUrl.applicationUrl(request);
-        return userService.forgotPasswordRequest(resetEmailDto.getEmail(), url);
+        return userService.forgotPasswordRequest(resetLinkDto.getEmail(), url);
     }
 
     @PostMapping(path = "/reset-password")
-    public String resetPassword(@RequestParam("token") String token, @RequestBody @Valid ResetEmailDto resetEmailDto) throws NotFoundException {
-        return userService.userResetPassword(token, resetEmailDto.getNewPassword());
+    public String resetPassword(@RequestParam("token") String token, @RequestBody @Valid ResetPasswordDto resetPasswordDto) throws NotFoundException {
+        return userService.userResetPassword(token, resetPasswordDto.getPassword());
+    }
+
+    @PostMapping(path = "/enable-mfa")
+    public String enableMfa(@RequestBody @Valid OtpRequestDto otpRequestDto) throws NotFoundException {
+        return userService.enableMfa(otpRequestDto);
+    }
+
+    @PostMapping(path = "/send-otp")
+    public String sendOtp(@RequestBody @Valid OtpRequestDto otpRequestDto) throws NotFoundException {
+        return userService.userOtp(otpRequestDto);
+    }
+
+    @PostMapping(path = "/authenticate-otp")
+    public AuthResponseDto authenticateOtp(@RequestBody @Valid AuthOtpDto authOtpDto) throws NotFoundException, UserAuthException {
+        return userService.userValidateOtp(authOtpDto.getOtp());
     }
 
     @GetMapping(path = "/user")

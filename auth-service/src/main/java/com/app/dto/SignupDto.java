@@ -1,6 +1,7 @@
 package com.app.dto;
 
 import com.app.validation.passwordValidation.Password;
+import com.app.validation.phoneNumberValidation.ValidPhoneNumber;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -24,4 +25,8 @@ public class SignupDto {
     @NotBlank(message = "Password is required")
     @Password
     private String password;
+
+    @NotBlank(message = "Phone number is required")
+    @ValidPhoneNumber
+    private String phoneNumber;
 }

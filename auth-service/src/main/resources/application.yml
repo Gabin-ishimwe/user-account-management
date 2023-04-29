@@ -41,3 +41,4 @@ eureka:
 app:
   jwt:
     secret: fakdjfakdsjfkadsjfkadsf
+
