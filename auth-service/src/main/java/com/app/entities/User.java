@@ -53,7 +53,9 @@ public class User {
     )
     private List<Role> roles;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(referencedColumnName = "id", name = "verification_id")
+    @OneToOne(mappedBy = "user")
     private VerificationToken verificationToken;
+
+    @OneToOne(mappedBy = "user")
+    private PasswordResetToken passwordResetToken;
 }

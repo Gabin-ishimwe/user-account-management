@@ -4,18 +4,15 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
-@Table(name = "verificationTokens")
+@Table(name = "password_reset_tokens")
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
-public class VerificationToken {
-
+@NoArgsConstructor
+public class PasswordResetToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,13 +28,13 @@ public class VerificationToken {
 
     public static final int EXPIRATION_TIME = 15;
 
-    public VerificationToken(String token, User user) {
+    public PasswordResetToken(String token, User user) {
         this.token = token;
         this.user = user;
         this.expirationTime = this.getTokenExpirationTime();
     }
 
-    public VerificationToken(String token) {
+    public PasswordResetToken(String token) {
         this.token = token;
         this.expirationTime = this.getTokenExpirationTime();
     }
@@ -46,6 +43,4 @@ public class VerificationToken {
         LocalDateTime localDateTime = LocalDateTime.now();
         return localDateTime.plusMinutes(EXPIRATION_TIME);
     }
-
-
 }

@@ -6,7 +6,7 @@ import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
-@Target(ElementType.FIELD)
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = PasswordConstraintValidator.class)

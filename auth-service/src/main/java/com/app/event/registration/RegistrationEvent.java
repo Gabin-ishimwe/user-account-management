@@ -1,4 +1,4 @@
-package com.app.event;
+package com.app.event.registration;
 
 
 import com.app.dto.AuthResponseDto;
