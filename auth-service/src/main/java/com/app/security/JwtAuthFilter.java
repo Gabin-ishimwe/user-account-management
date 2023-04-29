@@ -1,5 +1,6 @@
 package com.app.security;
 
+import com.app.repositories.TokenRepository;
 import com.app.utils.JwtUserDetailService;
 import com.app.utils.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -7,6 +8,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,19 +21,20 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private JwtUserDetailService jwtUserDetailService;
+    private final JwtUserDetailService jwtUserDetailService;
+
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws IOException, ServletException {
+            @NotNull HttpServletResponse response,
+            @NotNull FilterChain filterChain) throws IOException, ServletException {
         // check if request header contains authorization bearer token
         String header = request.getHeader("Authorization");
         String jwtToken = null;
@@ -42,21 +46,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         jwtToken = header.split(" ")[1];
         // extracting payload from token
-        try{
-            // ...
-            userEmail = jwtUtil.getUserNameFromToken(jwtToken);
-        } catch (IllegalArgumentException i) {
-            throw new IllegalArgumentException("Unable to get token");
-        } catch (ExpiredJwtException e) {
-            try {
-                throw new Exception("JWT has expired");
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+        userEmail = jwtUtil.getUserNameFromToken(jwtToken);
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = jwtUserDetailService.loadUserByUsername(userEmail);
-            if(jwtUtil.validateToken(jwtToken, userDetails)) {
+            var isTokenValid = tokenRepository.findByToken(jwtToken)
+                    .map(token -> !token.isExpired() && !token.isRevoked())
+                    .orElse(false);
+            if(jwtUtil.validateToken(jwtToken, userDetails) && isTokenValid) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,
                         null,
                         userDetails.getAuthorities()

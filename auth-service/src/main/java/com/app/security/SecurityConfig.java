@@ -1,9 +1,11 @@
 package com.app.security;
 
 
+import com.app.config.LogoutConfig;
 import com.app.utils.JwtUserDetailService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
@@ -34,6 +38,8 @@ public class SecurityConfig {
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
     private final JwtUserDetailService jwtUserDetailService;
+
+    private final LogoutConfig logoutConfig;
 
     private AccessDenied accessDenied;
 
@@ -65,7 +71,17 @@ public class SecurityConfig {
                 .anyRequest()
                 .authenticated()
                 .and()
-                .exceptionHandling().authenticationEntryPoint(jwtAuthEntryPoint).accessDeniedHandler(accessDenied)
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthEntryPoint)
+                .accessDeniedHandler(accessDenied)
+                .and()
+                .logout()
+                .logoutUrl("/api/v1/auth/logout")
+                .addLogoutHandler(logoutConfig)
+                .logoutSuccessHandler(((request, response, authentication) -> {
+                    SecurityContextHolder.clearContext();
+                    log.info("User has logged out from the system");
+                }))
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

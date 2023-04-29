@@ -3,8 +3,12 @@ package com.app.advice;
 import com.app.exceptions.NotFoundException;
 import com.app.exceptions.UserAuthException;
 import com.app.exceptions.UserExistsException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,6 +19,17 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class ApplicationException {
+
+    @ExceptionHandler({AccessDeniedException.class, ExpiredJwtException.class, JwtException.class, AuthenticationException.class})
+    public ResponseEntity<?> handleSecurityException(Exception ex) {
+        LocalDateTime errorTime = LocalDateTime.now();
+        return new ResponseEntity<>(new ErrorDetails(
+                ex.getMessage(),
+                null,
+                HttpStatus.UNAUTHORIZED,
+                errorTime
+        ), HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleInvalidArgument(MethodArgumentNotValidException methodArgumentNotValidException) {
         Map<String, String> errorMessages = new HashMap<>();
@@ -43,17 +58,17 @@ public class ApplicationException {
         ), HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<?> handleGlobalException(Exception exception) {
-//        LocalDateTime errorTime = LocalDateTime.now();
-//        return new ResponseEntity<>(new ErrorDetails(
-//                exception.getMessage(),
-//                null,
-//                HttpStatus.INTERNAL_SERVER_ERROR,
-//                errorTime
-//        ), HttpStatus.INTERNAL_SERVER_ERROR
-//        );
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleGlobalException(Exception exception) {
+        LocalDateTime errorTime = LocalDateTime.now();
+        return new ResponseEntity<>(new ErrorDetails(
+                exception.getMessage(),
+                null,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                errorTime
+        ), HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handleNotFoundException(NotFoundException notFoundException) {

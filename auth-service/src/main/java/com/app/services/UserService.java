@@ -4,18 +4,12 @@ import com.app.dto.AuthResponseDto;
 import com.app.dto.OtpRequestDto;
 import com.app.dto.SignInDto;
 import com.app.dto.SignupDto;
-import com.app.entities.Otp;
-import com.app.entities.PasswordResetToken;
-import com.app.entities.User;
-import com.app.entities.VerificationToken;
+import com.app.entities.*;
 import com.app.event.resetPassword.ResetPasswordEvent;
 import com.app.exceptions.NotFoundException;
 import com.app.exceptions.UserAuthException;
 import com.app.exceptions.UserExistsException;
-import com.app.repositories.OtpRepository;
-import com.app.repositories.RoleRepository;
-import com.app.repositories.UserRepository;
-import com.app.repositories.VerificationTokenRepository;
+import com.app.repositories.*;
 import com.app.utils.JwtUserDetailService;
 import com.app.utils.JwtUtil;
 import jakarta.transaction.Transactional;
@@ -32,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,6 +54,8 @@ public class UserService {
     private final TwilioService twilioService;
 
     private final OtpRepository otpRepository;
+
+    private final TokenRepository tokenRepository;
 
 
     @Transactional
@@ -93,6 +90,7 @@ public class UserService {
         if(!passwordVerification) throw new UserAuthException("Invalid Credential, Try again");
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userEmail, password));
+        revokeUserTokens(findUser.get());
         return createJwt("User Logged in Successfully", findUser.get());
     }
 
@@ -100,6 +98,15 @@ public class UserService {
         String userEmail = user.getEmail();
         UserDetails userDetails = jwtUserDetailService.loadUserByUsername(userEmail);
         String token = jwtUtil.generateToken(userDetails);
+        Token saveToken = Token.builder()
+                .user(user)
+                .token(token)
+                .tokenType(TokenType.BEARER)
+                .revoked(false)
+                .expired(false)
+                .build();
+
+        tokenRepository.save(saveToken);
         return AuthResponseDto.builder()
                 .message(message)
                 .token(token)
@@ -162,5 +169,15 @@ public class UserService {
         AuthResponseDto responseDto = createJwt("User logged in with OTP", userOtp);
         otpRepository.delete(otpValidation);
         return responseDto;
+    }
+
+    public void revokeUserTokens(User user) {
+        List<Token> validUserTokens = tokenRepository.findAllUserTokens(user.getId());
+        if(validUserTokens.isEmpty()) return;
+        validUserTokens.forEach(token -> {
+            token.setRevoked(true);
+            token.setExpired(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
     }
 }

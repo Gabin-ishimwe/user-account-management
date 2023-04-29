@@ -66,4 +66,7 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private Otp otp;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> token;
 }
