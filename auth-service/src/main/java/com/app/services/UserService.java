@@ -12,6 +12,8 @@ import com.app.exceptions.UserExistsException;
 import com.app.repositories.*;
 import com.app.utils.JwtUserDetailService;
 import com.app.utils.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -86,18 +90,15 @@ public class UserService {
 
         if(!findUser.get().isEnabled()) throw new UserAuthException("Account isn't verified");
 
-        boolean passwordVerification = passwordEncoder.matches(password, findUser.get().getPassword());
-        if(!passwordVerification) throw new UserAuthException("Invalid Credential, Try again");
-
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userEmail, password));
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userEmail, password));
+        if(!authenticate.isAuthenticated()) throw new UsernameNotFoundException("Bad Credentials, Try again");
         revokeUserTokens(findUser.get());
-        return createJwt("User Logged in Successfully", findUser.get());
+        return createJwt("User logged in successfully", findUser.get());
     }
 
     public AuthResponseDto createJwt(String message, User user) {
-        String userEmail = user.getEmail();
-        UserDetails userDetails = jwtUserDetailService.loadUserByUsername(userEmail);
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateToken(user.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
         Token saveToken = Token.builder()
                 .user(user)
                 .token(token)
@@ -109,7 +110,8 @@ public class UserService {
         tokenRepository.save(saveToken);
         return AuthResponseDto.builder()
                 .message(message)
-                .token(token)
+                .accessToken(token)
+                .refreshToken(refreshToken)
                 .build();
 
     }
@@ -117,7 +119,6 @@ public class UserService {
     public String  forgotPasswordRequest(String email, String url) throws NotFoundException {
         System.out.println(email);
         Optional<User> findUser = userRepository.findByEmail(email);
-        System.out.println(findUser.isPresent());
         if(findUser.isEmpty()) throw new NotFoundException("User doesn't exist");
         String passwordResetToken = UUID.randomUUID().toString();
         passwordResetTokenService.createUserPasswordResetToken(findUser.get(), passwordResetToken);
@@ -179,5 +180,41 @@ public class UserService {
             token.setExpired(true);
         });
         tokenRepository.saveAll(validUserTokens);
+    }
+
+    public AuthResponseDto createRefreshToken(HttpServletRequest request, HttpServletResponse response) throws UserAuthException {
+        String header = request.getHeader("Authorization");
+        String refreshToken = null;
+        String userEmail = null;
+        // check if header has keyword 'bearer' in it
+        if(header == null || !header.startsWith("Bearer ")) {
+            throw new UserAuthException("User not authenticated");
+        }
+        refreshToken = header.split(" ")[1];
+        // extracting payload from token
+        userEmail = jwtUtil.getUserNameFromToken(refreshToken);
+        if(userEmail != null) {
+            User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UserAuthException("User not found"));
+            System.out.println(jwtUtil.validateRefreshToken(refreshToken, user));
+            if(!jwtUtil.validateRefreshToken(refreshToken, user)) {
+                throw new UserAuthException("Invalid token");
+            }
+            String accessToken = jwtUtil.generateToken(user.getEmail());
+            revokeUserTokens(user);
+            Token saveToken = Token.builder()
+                    .user(user)
+                    .token(accessToken)
+                    .tokenType(TokenType.BEARER)
+                    .revoked(false)
+                    .expired(false)
+                    .build();
+
+            tokenRepository.save(saveToken);
+            return AuthResponseDto.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        }
+        return null;
     }
 }

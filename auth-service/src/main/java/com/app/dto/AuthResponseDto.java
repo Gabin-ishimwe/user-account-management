@@ -16,7 +16,9 @@ import java.util.List;
 public class AuthResponseDto {
     private String message;
 
-    private String token;
+    private String accessToken;
+
+    private String refreshToken;
 
     private User user;
 

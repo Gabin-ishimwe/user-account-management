@@ -9,6 +9,7 @@ import com.app.services.UserService;
 import com.app.services.VerificationTokenService;
 import com.app.utils.ApplicationUrl;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -68,6 +69,12 @@ public class UserController {
     @PostMapping(path = "/authenticate-otp")
     public AuthResponseDto authenticateOtp(@RequestBody @Valid AuthOtpDto authOtpDto) throws NotFoundException, UserAuthException {
         return userService.userValidateOtp(authOtpDto.getOtp());
+    }
+
+    @PostMapping(path = "/refresh-token")
+    public AuthResponseDto refreshToken(HttpServletRequest request, HttpServletResponse response) throws UserAuthException {
+        System.out.println("here");
+        return userService.createRefreshToken(request, response);
     }
 
     @GetMapping(path = "/user")
