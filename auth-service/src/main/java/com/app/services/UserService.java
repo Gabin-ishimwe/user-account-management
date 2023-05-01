@@ -5,6 +5,7 @@ import com.app.dto.OtpRequestDto;
 import com.app.dto.SignInDto;
 import com.app.dto.SignupDto;
 import com.app.entities.*;
+import com.app.event.kafka.SendProfileEvent;
 import com.app.event.resetPassword.ResetPasswordEvent;
 import com.app.exceptions.NotFoundException;
 import com.app.exceptions.UserAuthException;
@@ -61,6 +62,8 @@ public class UserService {
 
     private final TokenRepository tokenRepository;
 
+    private final SendProfileEvent profileEvent;
+
 
     @Transactional
     public AuthResponseDto userSignUp(SignupDto signupDto) throws UserExistsException {
@@ -75,6 +78,11 @@ public class UserService {
         User createdUser = userRepository.save(user);
 
         // send kafka stream to other service
+        profileEvent.publishProfileEvent(
+                signupDto.getFirstName(),
+                signupDto.getLastName(),
+                createdUser.getId()
+        );
 
         return AuthResponseDto.builder()
                 .message("Verify your email")
