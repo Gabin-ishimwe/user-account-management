@@ -95,7 +95,10 @@
         <artifactId>libphonenumber</artifactId>
         <version>8.13.11</version>
     </dependency>
-
-
+    <dependency>
+        <groupId>com.app</groupId>
+        <artifactId>common-dtos</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
 </dependencies>
 </project>
