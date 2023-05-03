@@ -110,8 +110,8 @@ public class UserService {
     }
 
     public AuthResponseDto createJwt(String message, User user) {
-        String token = jwtUtil.generateToken(user.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        String token = jwtUtil.generateToken(user);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
         Token saveToken = Token.builder()
                 .user(user)
                 .token(token)
@@ -212,7 +212,7 @@ public class UserService {
             if(!jwtUtil.validateRefreshToken(refreshToken, user)) {
                 throw new UserAuthException("Invalid token");
             }
-            String accessToken = jwtUtil.generateToken(user.getEmail());
+            String accessToken = jwtUtil.generateToken(user);
             revokeUserTokens(user);
             Token saveToken = Token.builder()
                     .user(user)

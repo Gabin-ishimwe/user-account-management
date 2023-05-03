@@ -30,6 +30,7 @@ public class AuthEventConsumer {
                     .firstName(authServiceKafkaProducer.getFirstName())
                     .lastName(authServiceKafkaProducer.getLastName())
                     .userId(authServiceKafkaProducer.getUserId())
+                    .profilePhoto("https://res.cloudinary.com/dmepvxtwv/image/upload/v1682596041/avatar_image_iyomy2.png")
                     .build());
 
             log.info("User profile created : " + createdProfile);

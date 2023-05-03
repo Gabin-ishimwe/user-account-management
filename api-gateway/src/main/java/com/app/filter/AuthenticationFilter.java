@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -23,6 +24,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Override
     public GatewayFilter apply(Config config) {
         return (((exchange, chain) -> {
+            ServerHttpRequest request = null;
             // what endpoints to validate
             if(validator.isSecured.test(exchange.getRequest())) {
                 // contain token in header
@@ -36,15 +38,24 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 authHeader = authHeader.split(" ")[1];
 
 
+
                 try {
                     // validate token
                     jwtUtil.validateToken(authHeader);
+
+                    request = exchange
+                            .getRequest()
+                            .mutate()
+                            .header("userId", (String) jwtUtil.getAllClaimsFromToken(authHeader).get("userId"))
+                            .build();
+                    System.out.println(exchange.getRequest());
                 } catch (JwtException | IllegalArgumentException exception) {
                     throw new JwtException(exception.getMessage());
                 }
             }
 
-            return chain.filter(exchange);
+            assert request != null;
+            return chain.filter(exchange.mutate().request(request).build());
         }));
     }
 
