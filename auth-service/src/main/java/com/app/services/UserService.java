@@ -78,12 +78,6 @@ public class UserService {
         User createdUser = userRepository.save(user);
 
         // send kafka stream to other service
-//        kafkaTemplate.send(topicName, AuthServiceKafkaProducer.builder()
-//                        .firstName(signupDto.getFirstName())
-//                        .lastName(signupDto.getLastName())
-//                        .userId(createdUser.getId())
-//                        .build());
-
         kafkaProducerConfig.sendMessage(AuthServiceKafkaProducer.builder()
                 .firstName(signupDto.getFirstName())
                 .lastName(signupDto.getLastName())

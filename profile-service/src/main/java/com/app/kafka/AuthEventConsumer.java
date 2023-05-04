@@ -53,4 +53,11 @@ public class AuthEventConsumer {
         }
 
     }
+
+    @KafkaListener(topics = "failure-profile")
+    public void compensationTransaction(UpdateProfileEventDto updateProfileEventDto) {
+        log.info("going to delete profile----------------");
+        profileRepository.deleteById(updateProfileEventDto.getProfileId());
+        log.info("profile deleted ---------------------");
+    }
 }

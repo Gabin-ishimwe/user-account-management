@@ -38,7 +38,7 @@ public class ProfileDto {
 
     private String nationality;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Date format should be dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @Pattern(regexp = "^\\d{2}/\\d{2}/\\d{4}$", message = "Date format should be dd/MM/yyyy")
     private String dateOfBirth;
 }

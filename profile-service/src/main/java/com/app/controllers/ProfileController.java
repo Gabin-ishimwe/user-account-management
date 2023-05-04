@@ -1,7 +1,7 @@
 package com.app.controllers;
 
 import com.app.dto.ProfileDto;
-import com.app.entities.Profile;
+import com.app.dto.ResponseData;
 import com.app.exceptions.NotFoundException;
 import com.app.services.ProfileService;
 import jakarta.validation.Valid;
@@ -22,12 +22,12 @@ public class ProfileController {
     @PutMapping(
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    public Profile updateProfile(@ModelAttribute @Valid ProfileDto profileDto, @RequestHeader("userId") UUID profileId) throws NotFoundException, IOException {
+    public ResponseData updateProfile(@ModelAttribute @Valid ProfileDto profileDto, @RequestHeader("userId") UUID profileId) throws NotFoundException, IOException {
         return profileService.updateProfile(profileDto, profileId);
     }
 
     @GetMapping()
-    public Profile getUserProfile(@RequestHeader("userId") UUID profileId) throws NotFoundException {
+    public ResponseData getUserProfile(@RequestHeader("userId") UUID profileId) throws NotFoundException {
         return profileService.getUserProfile(profileId);
     }
 }
