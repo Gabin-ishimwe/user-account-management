@@ -1,0 +1,30 @@
+#name: Build and Deploy
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#
+#env:
+#  REGISTRY_NAME: ${{ secrets.REGISTRY_NAME }}
+#  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+#  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+#
+#jobs:
+#  build-and-deploy:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Build and Deploy
+#        uses: GoogleCloudPlatform/jib-action@v2
+#        with:
+#          image: ${{ env.REGISTRY_NAME }}/myapp
+#          username: ${{ env.DOCKER_USERNAME }}
+#          password: ${{ env.DOCKER_PASSWORD }}
+#          project: my-project
+#          registry: docker.io
+#          jvmFlags: |
+#            -Xmx512m
+#            -Dspring.profiles.active=prod
