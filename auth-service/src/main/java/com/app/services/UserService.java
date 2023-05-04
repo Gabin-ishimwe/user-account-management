@@ -1,24 +1,22 @@
 package com.app.services;
 
-import com.app.dto.AuthResponseDto;
-import com.app.dto.OtpRequestDto;
-import com.app.dto.SignInDto;
-import com.app.dto.SignupDto;
+import com.app.dto.*;
 import com.app.entities.*;
 import com.app.event.resetPassword.ResetPasswordEvent;
 import com.app.exceptions.NotFoundException;
 import com.app.exceptions.UserAuthException;
 import com.app.exceptions.UserExistsException;
+import com.app.kafka.KafkaProducerConfig;
 import com.app.repositories.*;
 import com.app.utils.JwtUserDetailService;
 import com.app.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,10 +24,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,6 +57,13 @@ public class UserService {
 
     private final TokenRepository tokenRepository;
 
+    private final KafkaTemplate<String, AuthServiceKafkaProducer> kafkaTemplate;
+
+    @Value("${spring.kafka.topic.name}")
+    private String topicName;
+
+    private final KafkaProducerConfig kafkaProducerConfig;
+
 
     @Transactional
     public AuthResponseDto userSignUp(SignupDto signupDto) throws UserExistsException {
@@ -75,7 +78,11 @@ public class UserService {
         User createdUser = userRepository.save(user);
 
         // send kafka stream to other service
-
+        kafkaProducerConfig.sendMessage(AuthServiceKafkaProducer.builder()
+                .firstName(signupDto.getFirstName())
+                .lastName(signupDto.getLastName())
+                .userId(createdUser.getId())
+                .build());
         return AuthResponseDto.builder()
                 .message("Verify your email")
                 .user(createdUser)
@@ -97,8 +104,8 @@ public class UserService {
     }
 
     public AuthResponseDto createJwt(String message, User user) {
-        String token = jwtUtil.generateToken(user.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        String token = jwtUtil.generateToken(user);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
         Token saveToken = Token.builder()
                 .user(user)
                 .token(token)
@@ -199,7 +206,7 @@ public class UserService {
             if(!jwtUtil.validateRefreshToken(refreshToken, user)) {
                 throw new UserAuthException("Invalid token");
             }
-            String accessToken = jwtUtil.generateToken(user.getEmail());
+            String accessToken = jwtUtil.generateToken(user);
             revokeUserTokens(user);
             Token saveToken = Token.builder()
                     .user(user)

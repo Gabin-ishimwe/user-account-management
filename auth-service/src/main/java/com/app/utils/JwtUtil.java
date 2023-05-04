@@ -66,12 +66,16 @@ public class JwtUtil {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    public String generateToken(String userName) {
-        return buildToken(new HashMap<>(), userName, jwtExpirationTime);
+    public String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        return buildToken(claims, user.getEmail(), jwtExpirationTime);
     }
 
-    public String generateRefreshToken(String userName) {
-        return buildToken(new HashMap<>(), userName, refreshTokenExpirationTime);
+    public String generateRefreshToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        return buildToken(claims, user.getEmail(), refreshTokenExpirationTime);
     }
 
     private String buildToken(Map<String, Object> claims, String userName, Long expireTime) {

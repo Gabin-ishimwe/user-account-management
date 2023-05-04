@@ -45,25 +45,29 @@ public class UserController {
     }
 
     @PostMapping(path = "/forgot-password")
-    public String resetPasswordRequest(@RequestBody @Valid ResetLinkDto resetLinkDto, HttpServletRequest request) throws NotFoundException {
+    public ResponseData resetPasswordRequest(@RequestBody @Valid ResetLinkDto resetLinkDto, HttpServletRequest request) throws NotFoundException {
         System.out.println(resetLinkDto.getEmail());
         String url = applicationUrl.applicationUrl(request);
-        return userService.forgotPasswordRequest(resetLinkDto.getEmail(), url);
+        String res = userService.forgotPasswordRequest(resetLinkDto.getEmail(), url);
+        return ResponseData.builder().message(res).build();
     }
 
     @PostMapping(path = "/reset-password")
-    public String resetPassword(@RequestParam("token") String token, @RequestBody @Valid ResetPasswordDto resetPasswordDto) throws NotFoundException {
-        return userService.userResetPassword(token, resetPasswordDto.getPassword());
+    public ResponseData resetPassword(@RequestParam("token") String token, @RequestBody @Valid ResetPasswordDto resetPasswordDto) throws NotFoundException {
+        String res = userService.userResetPassword(token, resetPasswordDto.getPassword());
+        return ResponseData.builder().message(res).build();
     }
 
     @PostMapping(path = "/enable-mfa")
-    public String enableMfa(@RequestBody @Valid OtpRequestDto otpRequestDto) throws NotFoundException {
-        return userService.enableMfa(otpRequestDto);
+    public ResponseData enableMfa(@RequestBody @Valid OtpRequestDto otpRequestDto) throws NotFoundException {
+        String res = userService.enableMfa(otpRequestDto);
+        return ResponseData.builder().message(res).build();
     }
 
     @PostMapping(path = "/send-otp")
-    public String sendOtp(@RequestBody @Valid OtpRequestDto otpRequestDto) throws NotFoundException {
-        return userService.userOtp(otpRequestDto);
+    public ResponseData sendOtp(@RequestBody @Valid OtpRequestDto otpRequestDto) throws NotFoundException {
+        String res = userService.userOtp(otpRequestDto);
+        return ResponseData.builder().message(res).build();
     }
 
     @PostMapping(path = "/authenticate-otp")
@@ -75,10 +79,5 @@ public class UserController {
     public AuthResponseDto refreshToken(HttpServletRequest request, HttpServletResponse response) throws UserAuthException {
         System.out.println("here");
         return userService.createRefreshToken(request, response);
-    }
-
-    @GetMapping(path = "/user")
-    public String getUser() {
-        return "All users";
     }
 }
