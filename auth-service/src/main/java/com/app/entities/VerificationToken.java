@@ -23,7 +23,7 @@ public class VerificationToken {
     @Column(name = "expiration_time")
     private LocalDateTime expirationTime;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
@@ -44,6 +44,4 @@ public class VerificationToken {
         LocalDateTime localDateTime = LocalDateTime.now();
         return localDateTime.plusMinutes(EXPIRATION_TIME);
     }
-
-
 }

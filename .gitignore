@@ -33,3 +33,7 @@ build/
 .vscode/
 
 **/application.yml
+
+postgres-account/
+postgres-auth/
+postgres-profile/

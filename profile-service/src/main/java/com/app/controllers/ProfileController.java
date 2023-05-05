@@ -31,7 +31,7 @@ public class ProfileController {
         return profileService.getUserProfile(profileId);
     }
 
-    @GetMapping()
+    @GetMapping(path = "/all")
     public ResponseData getAllProfile() {
         return profileService.getAllProfile();
     }

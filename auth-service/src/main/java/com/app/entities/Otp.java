@@ -22,7 +22,7 @@ public class Otp {
     @Column(name = "expiration_time")
     private LocalDateTime expirationTime;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
