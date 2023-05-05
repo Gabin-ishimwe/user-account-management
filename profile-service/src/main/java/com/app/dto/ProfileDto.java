@@ -24,11 +24,11 @@ public class ProfileDto {
 
     private int age;
 
-    @MaritalStatusEnumValidator(enumC = Gender.class)
+    @MaritalStatusEnumValidator(enumC = Gender.class, message = "Gender must be MALE or FEMALE")
     private String gender;
 
 
-    @MaritalStatusEnumValidator()
+    @MaritalStatusEnumValidator(message = "Marital status must be SINGLE, MARRIED, DIVORCED, WIDOWED")
     private String maritalStatus;
 
     private String nationality;

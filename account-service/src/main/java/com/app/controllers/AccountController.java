@@ -35,4 +35,9 @@ public class AccountController {
     public ResponseData changeAccountStatus(@RequestParam(value = "accountId") UUID accountId, @RequestParam("status") String status) throws NotFoundException {
         return accountService.updateAccountStatus(accountId, status);
     }
+
+    @GetMapping
+    public ResponseData getAllAccounts() {
+        return accountService.getAllAccounts();
+    }
 }

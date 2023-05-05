@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -68,6 +69,14 @@ public class AccountService {
         return ResponseData.builder()
                 .message("Account status updated")
                 .data(updatedAccount)
+                .build();
+    }
+
+    public ResponseData getAllAccounts() {
+        List<Account> allAccounts = accountRepository.findAll();
+        return ResponseData.builder()
+                .message("All user accounts")
+                .data(allAccounts)
                 .build();
     }
 }

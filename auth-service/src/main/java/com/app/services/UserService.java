@@ -129,7 +129,7 @@ public class UserService {
         if(findUser.isEmpty()) throw new NotFoundException("User doesn't exist");
         String passwordResetToken = UUID.randomUUID().toString();
         passwordResetTokenService.createUserPasswordResetToken(findUser.get(), passwordResetToken);
-        String resetUrl = url + "/api/v1/auth/reset-password?token=" + passwordResetToken;
+        String resetUrl = "http://64.226.87.59" + "/api/v1/auth/reset-password?token=" + passwordResetToken;
         applicationEventPublisher.publishEvent(new ResetPasswordEvent(findUser.get(), resetUrl));
         return "Reset password link sent on your email";
     }
@@ -223,5 +223,13 @@ public class UserService {
                     .build();
         }
         return null;
+    }
+
+    public ResponseData getAllUsers() {
+        List<User> allUsers = userRepository.findAll();
+        return ResponseData.builder()
+                .message("All users")
+                .data(allUsers)
+                .build();
     }
 }

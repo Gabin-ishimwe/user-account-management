@@ -30,4 +30,9 @@ public class ProfileController {
     public ResponseData getUserProfile(@RequestHeader("userId") UUID profileId) throws NotFoundException {
         return profileService.getUserProfile(profileId);
     }
+
+    @GetMapping()
+    public ResponseData getAllProfile() {
+        return profileService.getAllProfile();
+    }
 }

@@ -1,30 +1,36 @@
-#name: Build and Deploy
-#
-#on:
-#  push:
-#    branches:
-#      - main
-#
-#env:
-#  REGISTRY_NAME: ${{ secrets.REGISTRY_NAME }}
-#  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-#
-#jobs:
-#  build-and-deploy:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#      - name: Build and Deploy
-#        uses: GoogleCloudPlatform/jib-action@v2
-#        with:
-#          image: ${{ env.REGISTRY_NAME }}/myapp
-#          username: ${{ env.DOCKER_USERNAME }}
-#          password: ${{ env.DOCKER_PASSWORD }}
-#          project: my-project
-#          registry: docker.io
-#          jvmFlags: |
-#            -Xmx512m
-#            -Dspring.profiles.active=prod
+name: Microservice Backend CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B clean package --file pom.xml
+
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.DROPLET_HOST}}
+          username: ${{secrets.DROPLET_USERNAME}}
+          key: ${{secrets.DROPLET_KEY}}
+          script: |
+            docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
+            docker compose up -d
+            echo 'Deployment to digital ocean finished'
+
+#      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+#      - name: Update dependency graph
+#        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6

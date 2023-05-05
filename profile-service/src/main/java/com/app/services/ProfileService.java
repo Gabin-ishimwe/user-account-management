@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -78,6 +79,14 @@ public class ProfileService {
                 .orElseThrow(() -> new NotFoundException("Profile not found"));
         return ResponseData.builder()
                 .data(userProfile)
+                .build();
+    }
+
+    public ResponseData getAllProfile() {
+        List<Profile> allProfiles = profileRepository.findAll();
+        return ResponseData.builder()
+                .message("All profiles")
+                .data(allProfiles)
                 .build();
     }
 }

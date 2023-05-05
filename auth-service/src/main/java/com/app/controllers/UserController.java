@@ -80,4 +80,10 @@ public class UserController {
         System.out.println("here");
         return userService.createRefreshToken(request, response);
     }
+
+    // TODO: admin endpoint
+    @GetMapping()
+    public ResponseData getAllUsers() throws UserAuthException {
+        return userService.getAllUsers();
+    }
 }
