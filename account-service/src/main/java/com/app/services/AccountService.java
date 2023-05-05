@@ -1,6 +1,5 @@
 package com.app.services;
 
-import com.app.config.CloudinaryConfig;
 import com.app.dto.AccountDto;
 import com.app.dto.AccountVerification;
 import com.app.dto.ResponseData;
@@ -48,6 +47,7 @@ public class AccountService {
         }
         Account savedAccount = accountRepository.save(userAccount);
         return ResponseData.builder()
+                .message("Account updated")
                 .data(savedAccount)
                 .build();
     }

@@ -2,7 +2,6 @@ package com.app.event.registration;
 
 
 import com.app.dto.AuthResponseDto;
-import com.app.entities.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;

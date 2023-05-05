@@ -3,7 +3,6 @@ package com.app.validations.maritalStatusEnumValidation;
 import com.app.entities.MaritalStatus;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import jakarta.validation.constraints.NotNull;
 
 import java.lang.annotation.*;
 

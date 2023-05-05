@@ -9,7 +9,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 

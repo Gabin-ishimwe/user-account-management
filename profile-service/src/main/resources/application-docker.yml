@@ -1,0 +1,68 @@
+server:
+  port: 8083
+
+# Eureka Server
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://eureka:password@discovery-service:8761/eureka"
+  instance:
+    prefer-ip-address: true
+
+spring:
+  application:
+    name: profile-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://postgres-profile:5433/profile-service
+    username: postgres
+    password: postgres
+  main:
+    allow-bean-definition-overriding: true
+
+  # kafka properties
+  kafka:
+    bootstrap-servers: "broker:29092"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: auth-group
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
+    topic:
+      name: profile-event
+
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+
+cloudinary:
+  cloud_name: dmepvxtwv
+  api_key: 315539454121522
+  api_secret: loWqc4xiNEmb1YUa812FvHzrjd0
+
+#  cloud:
+#    stream:
+#      function:
+#        definition: profileConsumerUpdate
+#      bindings:
+#        sendProfileSupplier-in-0: ## -in-: consumer
+#          destination: auth-event # topic
+#        sendProfileSupplier-out-0:
+#          destination: profile-event # topic

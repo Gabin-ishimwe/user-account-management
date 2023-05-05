@@ -1,6 +1,5 @@
 package com.app.event.resetPassword;
 
-import com.app.entities.PasswordResetToken;
 import com.app.entities.User;
 import lombok.Getter;
 import lombok.Setter;

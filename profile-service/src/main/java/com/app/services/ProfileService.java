@@ -1,6 +1,5 @@
 package com.app.services;
 
-import com.app.config.CloudinaryConfig;
 import com.app.dto.ProfileDto;
 import com.app.dto.ResponseData;
 import com.app.entities.Gender;
@@ -11,17 +10,14 @@ import com.app.repositories.ProfileRepository;
 import com.app.utils.CloudinaryUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,22 +37,22 @@ public class ProfileService {
             imageUrl = cloudinaryUtil.uploadImage(profilePhoto);
         }
 
-        if(findProfile.getFirstName() != null) {
+        if(profileDto.getFirstName() != null) {
             findProfile.setFirstName(profileDto.getFirstName());
         }
-        if(findProfile.getLastName() != null) {
+        if(profileDto.getLastName() != null) {
             findProfile.setLastName(profileDto.getLastName());
         }
-        if(findProfile.getGender() != null) {
+        if(profileDto.getGender() != null) {
             findProfile.setGender(Gender.valueOf(profileDto.getGender()));
         }
-        if(findProfile.getMaritalStatus() != null) {
+        if(profileDto.getMaritalStatus() != null) {
             findProfile.setMaritalStatus(MaritalStatus.valueOf(profileDto.getMaritalStatus()));
         }
-        if(findProfile.getProfilePhoto() != null) {
+        if(profileDto.getProfilePhoto() != null) {
             findProfile.setProfilePhoto(Objects.nonNull(imageUrl) ? imageUrl : findProfile.getProfilePhoto());
         }
-        if(findProfile.getDateOfBirth() != null) {
+        if(profileDto.getDateOfBirth() != null) {
             // Define a formatter for the date format you want to use
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate change = LocalDate.parse(profileDto.getDateOfBirth(), formatter);

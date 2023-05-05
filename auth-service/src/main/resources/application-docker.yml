@@ -1,0 +1,79 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: auth-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://postgres-auth:5432/auth-service
+    username: postgres
+    password: postgres
+  main:
+    allow-bean-definition-overriding: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: s.ishimwegabin@gmail.com
+    password: eupwhwzjzzbbutsm
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # kafka properties
+  kafka:
+    bootstrap-servers: "broker:29092"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: auth-group
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
+    topic:
+      name: profile-event
+
+#  cloud:
+#    stream:
+#      function:
+#        definition: sendProfileSupplier; profileEventConsumer
+#      bindings:
+#        sendProfileSupplier-out-0: ## -out-: producer
+#          destination: auth-event # topic
+#        profileEventConsumer-in-out: ## -in-: consumer
+#          destination: profile-event # topic
+
+# Eureka Server
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://eureka:password@discovery-service:8761/eureka"
+  instance:
+    prefer-ip-address: true
+
+
+app:
+  jwt:
+    secret: 5v8y/BE(H+MbQeThWmZq4t6w9z$C&F)
+    expiration_time: 86400000 # 1 day
+    refresh_token:
+      expiration_time: 604800000 # 7 days
+
+twilio:
+  account_sid: AC9871796fd39b8bd098d5103efedac2a8
+  auth_token: d0bc3dbb8941ee5ed7f91fc7347da084
+  trial_number: +16203878414
