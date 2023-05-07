@@ -24,7 +24,7 @@ public class PasswordResetTokenService {
      public String validatePasswordResetToken(String token) throws NotFoundException {
         PasswordResetToken findPasswordResetToken = passwordResetTokenRepository.findByToken(token);
         if(findPasswordResetToken == null) throw new NotFoundException("Invalid reset token");
-         if(findPasswordResetToken.getExpirationTime().isBefore(LocalDateTime.now())) {
+        if(findPasswordResetToken.getExpirationTime().isBefore(LocalDateTime.now())) {
              return "Token already expired";
          }
          return "Valid";
