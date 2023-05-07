@@ -25,7 +25,7 @@ public class AccountController {
         return accountService.updateUserAccount(accountDto, userId);
     }
 
-    @GetMapping
+    @GetMapping("/user")
     public Account getUserAccount(@RequestHeader("userId") UUID userId) throws NotFoundException {
         return accountService.getUserAccount(userId);
     }

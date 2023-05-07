@@ -1,4 +1,4 @@
-name: Microservice Backend CI/CD
+name: Deploy to digital ocean CI/CD
 
 on:
   push:
