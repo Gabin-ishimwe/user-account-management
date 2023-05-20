@@ -1,8 +1,10 @@
 package com.app.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @Builder
@@ -16,6 +18,8 @@ import lombok.Data;
                 )
         }
 )
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

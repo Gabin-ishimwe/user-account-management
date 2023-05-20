@@ -70,7 +70,10 @@ public class RoleService {
                     .build();
         }
 
-        return null;
+        return ResponseData.builder()
+                .message("User role doesn't exist " + findRole.getName())
+                .data(user)
+                .build();
     }
 
     public ResponseData getRoles() {
