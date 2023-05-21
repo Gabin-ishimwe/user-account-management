@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
@@ -38,7 +40,7 @@ public class SecurityConfig {
 
     private final LogoutConfig logoutConfig;
 
-    private AccessDenied accessDenied;
+    private final AccessDenied accessDenied;
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
