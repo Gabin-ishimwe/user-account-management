@@ -26,10 +26,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -66,14 +63,21 @@ public class UserService {
 
 
     @Transactional
-    public AuthResponseDto userSignUp(SignupDto signupDto) throws UserExistsException {
+    public AuthResponseDto userSignUp(SignupDto signupDto) throws UserExistsException, NotFoundException {
         Optional<User> findUser = userRepository.findByEmail(signupDto.getEmail());
         if(findUser.isPresent()) throw new UserExistsException("User already exists");
+        List<Role> roles = new ArrayList<>();
+        Role userRole = roleRepository.findByName("USER");
+        if(userRole == null) {
+            throw new NotFoundException("User not found");
+        }
+        roles.add(userRole);
         // create user in database
         User user = User.builder()
                 .email(signupDto.getEmail())
                 .password(passwordEncoder.encode(signupDto.getPassword()))
                 .contactNumber(signupDto.getPhoneNumber())
+                .roles(roles)
                 .build();
         User createdUser = userRepository.save(user);
 

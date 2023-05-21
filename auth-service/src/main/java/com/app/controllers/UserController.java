@@ -29,7 +29,7 @@ public class UserController {
     private final VerificationTokenService verificationTokenService;
 
     @PostMapping(path = "/sign-up")
-    public ResponseEntity<AuthResponseDto> userSignUp(@RequestBody @Valid SignupDto signupDto, HttpServletRequest request) throws UserExistsException {
+    public ResponseEntity<AuthResponseDto> userSignUp(@RequestBody @Valid SignupDto signupDto, HttpServletRequest request) throws UserExistsException, NotFoundException {
         AuthResponseDto responseDto =  userService.userSignUp(signupDto);
         publisher.publishEvent(new RegistrationEvent(responseDto, applicationUrl.applicationUrl(request)));
         return ResponseEntity.ok(responseDto);
