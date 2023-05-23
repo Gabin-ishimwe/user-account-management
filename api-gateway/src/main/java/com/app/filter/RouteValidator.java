@@ -14,8 +14,17 @@ public class RouteValidator {
             "/api/v1/auth/verify-email",
             "/eureka"
     );
+
+    public static final List<String> adminEndpoints = List.of(
+            "/api/v1/auth/role/**"
+    );
     public Predicate<ServerHttpRequest> isSecured =
             request -> openApiEndpoints
                     .stream()
                     .noneMatch(uri-> request.getURI().getPath().contains(uri));
+
+    public Predicate<ServerHttpRequest> adminRoutes =
+            request -> adminEndpoints
+                    .stream()
+                    .noneMatch(uri -> request.getURI().getPath().contains(uri));
 }

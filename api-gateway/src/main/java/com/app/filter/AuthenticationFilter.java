@@ -36,8 +36,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
                 authHeader = authHeader.split(" ")[1];
 
-
-
                 try {
                     // validate token
                     jwtUtil.validateToken(authHeader);

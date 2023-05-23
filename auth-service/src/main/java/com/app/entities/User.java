@@ -58,15 +58,15 @@ public class User {
     )
     private List<Role> roles;
 
-    @OneToOne(mappedBy = "user")
-    private VerificationToken verificationToken;
-
-    @OneToOne(mappedBy = "user")
-    private PasswordResetToken passwordResetToken;
-
-    @OneToOne(mappedBy = "user")
-    private Otp otp;
-
-    @OneToMany(mappedBy = "user")
-    private List<Token> token;
+//    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+//    private VerificationToken verificationToken;
+//
+//    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+//    private PasswordResetToken passwordResetToken;
+//
+//    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+//    private Otp otp;
+//
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+//    private List<Token> token;
 }

@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,7 +29,7 @@ public class UserController {
     private final VerificationTokenService verificationTokenService;
 
     @PostMapping(path = "/sign-up")
-    public ResponseEntity<AuthResponseDto> userSignUp(@RequestBody @Valid SignupDto signupDto, HttpServletRequest request) throws UserExistsException {
+    public ResponseEntity<AuthResponseDto> userSignUp(@RequestBody @Valid SignupDto signupDto, HttpServletRequest request) throws UserExistsException, NotFoundException {
         AuthResponseDto responseDto =  userService.userSignUp(signupDto);
         publisher.publishEvent(new RegistrationEvent(responseDto, applicationUrl.applicationUrl(request)));
         return ResponseEntity.ok(responseDto);
@@ -83,6 +84,7 @@ public class UserController {
 
     // TODO: admin endpoint
     @GetMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseData getAllUsers() throws UserAuthException {
         return userService.getAllUsers();
     }

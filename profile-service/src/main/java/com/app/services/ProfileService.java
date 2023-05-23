@@ -53,6 +53,9 @@ public class ProfileService {
         if(profileDto.getProfilePhoto() != null) {
             findProfile.setProfilePhoto(Objects.nonNull(imageUrl) ? imageUrl : findProfile.getProfilePhoto());
         }
+        if(profileDto.getNationality() != null) {
+            findProfile.setNationality(profileDto.getNationality());
+        }
         if(profileDto.getDateOfBirth() != null) {
             // Define a formatter for the date format you want to use
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");

@@ -66,12 +66,14 @@ public class JwtUtil {
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
+        claims.put("roles", user.getRoles());
         return buildToken(claims, user.getEmail(), jwtExpirationTime);
     }
 
     public String generateRefreshToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
+        claims.put("roles", user.getRoles());
         return buildToken(claims, user.getEmail(), refreshTokenExpirationTime);
     }
 

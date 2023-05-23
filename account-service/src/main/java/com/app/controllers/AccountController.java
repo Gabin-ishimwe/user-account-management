@@ -20,12 +20,12 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, path = "/profile")
     public ResponseData updateUserAccount(@ModelAttribute @Valid AccountDto accountDto, @RequestHeader("userId") UUID userId) throws NotFoundException, IOException {
         return accountService.updateUserAccount(accountDto, userId);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/profile")
     public Account getUserAccount(@RequestHeader("userId") UUID userId) throws NotFoundException {
         return accountService.getUserAccount(userId);
     }
@@ -36,6 +36,7 @@ public class AccountController {
         return accountService.updateAccountStatus(accountId, status);
     }
 
+    // TODO: authorize for specified user roles (ADMIN)
     @GetMapping
     public ResponseData getAllAccounts() {
         return accountService.getAllAccounts();
