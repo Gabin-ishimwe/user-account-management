@@ -32,7 +32,7 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
         String verificationToken = UUID.randomUUID().toString();
         verificationTokenService.saveUserVerificationToken(user, verificationToken);
         // send email
-        String url = "http://64.226.87.59" + "/api/v1/auth/verify-email?token=" + verificationToken;
+        String url = "http://161.35.27.255" + "/api/v1/auth/verify-email?token=" + verificationToken;
         // send email
         try {
             sendVerificationEmail(url, user);

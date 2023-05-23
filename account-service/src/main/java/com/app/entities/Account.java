@@ -31,6 +31,7 @@ public class Account {
 
     private String document;
 
+    @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
     @Column(name = "is_verified")

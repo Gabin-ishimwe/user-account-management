@@ -4,7 +4,6 @@ import com.app.exceptions.UserAccessDenied;
 import com.app.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -12,6 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
+
 
 @Component
 public class AdminRequestFilter extends AbstractGatewayFilterFactory<AdminRequestFilter.Config> {
@@ -36,12 +37,27 @@ public class AdminRequestFilter extends AbstractGatewayFilterFactory<AdminReques
                 authHeader = authHeader.split(" ")[1];
                 try {
                     Claims tokenBody = jwtUtil.getAllClaimsFromToken(authHeader);
-                    System.out.println("token body" + tokenBody);
                     // cast into an array
-                    List<?> roles = (List<?>) tokenBody.get("roles");
+                    Object roles =  tokenBody.get("roles");
                     System.out.println("roles=---" + roles);
-                    boolean isAdmin = roles.contains("ADMIN");
-                    System.out.println( "isAdmin=------" + isAdmin);
+                    boolean isAdmin = false;
+                    if(roles instanceof List) {
+                        List<?> rolesList = (List<?>) roles;
+                        System.out.println("role list mapped=-----------" + rolesList);
+                        for(Object roleObj : rolesList) {
+                            // Check if the role object is a map
+                            if (roleObj instanceof Map) {
+                                Map<String, Object> roleMap = (Map<String, Object>) roleObj;
+                                String roleName = (String) roleMap.get("name");
+
+                                // Compare the role with a certain value
+                                if ("ADMIN".equals(roleName)) {
+                                    isAdmin = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     if(!isAdmin) {
                         throw new UserAccessDenied("User doesn't have ADMIN role");
                     }

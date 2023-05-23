@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/auth/role")
+@RequestMapping("/api/v1/role")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class RoleController {

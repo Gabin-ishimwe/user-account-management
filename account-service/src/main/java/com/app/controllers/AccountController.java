@@ -36,6 +36,7 @@ public class AccountController {
         return accountService.updateAccountStatus(accountId, status);
     }
 
+    // TODO: authorize for specified user roles (ADMIN)
     @GetMapping
     public ResponseData getAllAccounts() {
         return accountService.getAllAccounts();

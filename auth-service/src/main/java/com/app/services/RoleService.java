@@ -64,10 +64,6 @@ public class RoleService {
                         .data(user)
                         .build();
             }
-            return ResponseData.builder()
-                    .message("User role doesn't exist " + findRole.getName())
-                    .data(user)
-                    .build();
         }
 
         return ResponseData.builder()
