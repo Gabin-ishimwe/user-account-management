@@ -1,0 +1,97 @@
+server:
+  port: 8081
+
+# Eureka Server
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: "http://localhost:8761/eureka"
+  instance:
+    prefer-ip-address: true
+
+spring:
+  application:
+    name: api-gateway
+
+  # distributed tracing with zipkin
+  zipkin:
+    base-url: http://localhost:9411
+    sender:
+      type: kafka
+  sleuth:
+    sample:
+      probability: 1.0 # send all 100% requests to zipkin
+
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    gateway:
+      routes:
+        ## Auth Service Route
+        - id: auth-service
+          uri: lb://auth-service # used lb to allow client side to do some load balancing
+          predicates:
+            - Path= /api/v1/auth/**
+          filters:
+            - AuthenticationFilter
+
+        ## Auth Service Route
+        - id: auth-service
+          uri: lb://auth-service # used lb to allow client side to do some load balancing
+          predicates:
+            - Path= /api/v1/role/**
+          filters:
+            - AuthenticationFilter
+            - AdminRequestFilter
+
+
+        ## Auth Service Route
+        - id: auth-service
+          uri: lb://auth-service # used lb to allow client side to do some load balancing
+          predicates:
+            - Path= /api/v1/role/**
+          filters:
+            - AuthenticationFilter
+            - AdminRequestFilter
+
+
+        ## Account Service Route
+        - id: account-service
+          uri: lb://account-service # used lb to allow client side to do some load balancing
+          predicates:
+            - Path= /api/v1/account/profile
+          filters:
+            - AuthenticationFilter
+
+        ## Account Service Route
+        - id: account-service
+          uri: lb://account-service # used lb to allow client side to do some load balancing
+          predicates:
+            - Path= /api/v1/account, /api/v1/account/verification
+          filters:
+            - AuthenticationFilter
+            - AdminRequestFilter
+
+        ## Profile Service Route
+        - id: profile-service
+          uri: lb://profile-service # used lb to allow client side to do some load balancing
+          predicates:
+            - Path= /api/v1/profile/**
+          filters:
+            - AuthenticationFilter
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: TRACE
+    #            route:
+    #              RouteDefinitionRouteLocator: INFO
+    #            nodeValue: TRACE
+    ## ROOT LOGGER OF THE WHOLE APPLICATION
+    root: INFO
+
+app:
+  jwt:
+    secret: 5v8y/BE(H+MbQeThWmZq4t6w9z$C&F)

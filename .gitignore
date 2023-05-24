@@ -32,8 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-**/application.yml
-**/application-docker.yml
+#**/application.yml
+#**/application-docker.yml
 postgres-account/
 postgres-auth/
 postgres-profile/
