@@ -27,7 +27,7 @@ jobs:
           username: ${{secrets.DROPLET_USERNAME}}
           key: ${{secrets.DROPLET_KEY}}
           script: |
-            docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
+            docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi $(docker images -q)
             docker compose up -d
             echo 'Deployment to digital ocean finished'
 
