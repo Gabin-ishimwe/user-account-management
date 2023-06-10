@@ -3,6 +3,7 @@ package com.app.controllers;
 import com.app.dto.ResponseData;
 import com.app.exceptions.NotFoundException;
 import com.app.services.RoleService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/role")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
+@SecurityRequirement(name = "BearerAuth")
 public class RoleController {
 
     private final RoleService roleService;
