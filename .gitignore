@@ -37,3 +37,4 @@ build/
 postgres-account/
 postgres-auth/
 postgres-profile/
+.env

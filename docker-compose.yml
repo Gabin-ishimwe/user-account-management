@@ -115,6 +115,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-auth:5432/auth-service
+    env_file:
+      - .env
     depends_on:
       - postgres-auth-service
       - zookeeper
