@@ -66,7 +66,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/send-otp")
-    public ResponseData sendOtp(@RequestBody @Valid OtpRequestDto otpRequestDto) throws NotFoundException {
+    public ResponseData sendOtp(@RequestBody @Valid OtpRequestDto otpRequestDto) throws Exception {
         String res = userService.userOtp(otpRequestDto);
         return ResponseData.builder().message(res).build();
     }

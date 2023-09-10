@@ -29,7 +29,7 @@ public class RoleService {
             user.setRoles(List.of(findRole));
             userRepository.save(user);
             return ResponseData.builder()
-                    .message("User already has role " + findRole.getName())
+                    .message("User role added " + findRole.getName())
                     .data(user)
                     .build();
         }
@@ -46,7 +46,7 @@ public class RoleService {
         userRepository.save(user);
         System.out.println(user);
         return ResponseData.builder()
-                .message("User already has role " + findRole.getName())
+                .message("User role added " + findRole.getName())
                 .data(user)
                 .build();
     }

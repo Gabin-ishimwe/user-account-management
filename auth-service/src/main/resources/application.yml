@@ -5,7 +5,7 @@ spring:
     name: auth-service
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -87,5 +87,5 @@ app:
 
 twilio:
   account_sid: AC9871796fd39b8bd098d5103efedac2a8
-  auth_token: 26f4fe6b34558910505cbe3dd0d9048c
-  trial_number: +16203878414
+  auth_token: b6c54c0bc0fa1edf0e944e878da29aac
+  trial_number: +16612623772

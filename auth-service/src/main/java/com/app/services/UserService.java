@@ -164,7 +164,7 @@ public class UserService {
         return "Multi factor authentication enabled";
     }
 
-    public String userOtp(OtpRequestDto otpRequestDto) throws NotFoundException {
+    public String userOtp(OtpRequestDto otpRequestDto) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null && !authentication.isAuthenticated()) return "User not authenticated";
 
@@ -172,6 +172,7 @@ public class UserService {
 
         Optional<User> findUser = userRepository.findByEmail(userDetails.getUsername());
         if(findUser.isEmpty()) throw new NotFoundException("User not found");
+        if(!findUser.get().isMfaEnabled()) throw new Exception("Multi-factor authentication not enabled");
         return twilioService.sendOtpPasssword(otpRequestDto, findUser.get());
     }
 

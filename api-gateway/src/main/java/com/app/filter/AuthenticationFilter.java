@@ -39,7 +39,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 try {
                     // validate token
                     jwtUtil.validateToken(authHeader);
-
                     request = exchange
                             .getRequest()
                             .mutate()
