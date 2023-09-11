@@ -17,6 +17,14 @@ jobs:
           java-version: '19'
           distribution: 'temurin'
           cache: maven
+      - name: Check SSH Environment Variables
+        run: |
+          echo "SSH_HOST: $DROPLET_HOST"
+          echo "SSH_KEY: $DROPLET_KEY"
+          echo "SSH_USERNAME: $DROPLET_USERNAME"
+          # Do not echo the private key for security reasons.
+          echo "Done checking SSH environment variables."
+
       - name: Build with Maven
         run: mvn -B clean package
 
