@@ -115,7 +115,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-auth:5432/auth-service
-      - TWILIO_AUTH_TOKEN=716d260d7a8be08b4c4e8889098ab909
+      - TWILIO_AUTH_TOKEN=14180cbed8b22f06c3484ce51daa458f
     env_file:
       - .env
     depends_on:
