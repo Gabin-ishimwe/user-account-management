@@ -19,9 +19,10 @@ jobs:
           cache: maven
       - name: Check SSH Environment Variables
         run: |
-          echo "SSH_HOST: $DROPLET_HOST"
-          echo "SSH_KEY: $DROPLET_KEY"
-          echo "SSH_USERNAME: $DROPLET_USERNAME"
+          echo "SSH_HOST: ${{secrets.DROPLET_HOST}}"
+          echo "SSH_KEY: ${{secrets.DROPLET_HOST}}"
+          echo "SSH_USERNAME: ${{secrets.DROPLET_HOST}}"
+          echo "Message: Hello there"
           # Do not echo the private key for security reasons.
           echo "Done checking SSH environment variables."
 
